@@ -1,11 +1,11 @@
-# sql Style Guide
+# SQL Style Guide
 
 
 ## *Introduction*
 
-Writing sql code to materialize dbt data models is an ongoing, collaborative process. Adhering to a style guide leads to:
+Writing SQL code to materialize dbt data models is an ongoing, collaborative process. Adhering to a style guide leads to:
 
-- sql code that is easy to read and maintain
+- SQL code that is easy to read and maintain
 - A more efficient code review and QA process
 - Clear patterns in the codebase, promoting adherence to DRY (Don’t Repeat Yourself) principles
 
@@ -14,9 +14,9 @@ Writing sql code to materialize dbt data models is an ongoing, collaborative pro
 - It is our shared responsibility to adhere to and uphold this style guide. The expectation is that the team will follow the guidelines during code development, code reviews, and, most importantly, for any code committed to the GitHub repository
 - Our primary goal is to prioritize readability, maintainability, and robustness, rather than minimizing the number of lines of code. Extra lines of code are inexpensive; time is what we need to optimize
 
-## *High-Level Style Guide Rules
+## High-Level Style Guide Rules
 
-Here's example query to demonstrate how this style gfuid is applied in practive:
+Here's example query to demonstrate how this style guide is applied in practice:
 
 ```sql
 with subscriptions as (
@@ -49,7 +49,7 @@ subscriptions_sample as ( -- Use descriptive CTE names
     1 as subscription_id, 
     created_at as subscription_created_at,
     created_at::date as subscription_start_date
-  from subscription_csv
+  from subscriptions_csv
 ),
 
 combined_subscriptions as (
@@ -78,20 +78,19 @@ select * from final
 
 ## *Code Formatting*
 
-### Use lowercase sql
-It's just as readable as uppercase sql and you won't have to constantly be holding down a shift key.
+### Use lowercase SQL
+It's just as readable as uppercase SQL and you won't have to constantly be holding down a shift key.
 
 ### Single line vs multiple line queries
 
-The only time to put all of your sql on one line is when you're selecting:
+The only time to put all of your SQL on one line is when you're selecting:
 
-* All columns (*) or selecting a few columns (~ <5)
+* All columns (*) or selecting 1 column
 * _And_ there's no additional complexity in your query
 
 The reason for this is simply that it's still easy to read this when everything is on one line. But once you start adding more columns or more complexity, it's easier to read if it's on multiple lines.
 
-Use trailing commas (as opposed to leading commas)
-Commas should be followed by a space before the column name and the first column name should be aligned for readability:
+Use trailing commas (as opposed to leading commas). Commas should be followed by a space before the column name and the first column name should be aligned for readability:
 
 ```sql
 -- Bad (too many columns on one line)
@@ -158,7 +157,7 @@ where 1=1
 
 ### Use single quotes
 
-While some sql dialects like BigQuery allow double quotes, most dialects treat double quotes as referring to column names. To avoid ambiguity, it's preferable to use single quotes.
+While some SQL dialects like BigQuery allow double quotes, most dialects treat double quotes as referring to column names. To avoid ambiguity, it's preferable to use single quotes.
 
 ```sql
 -- Bad
@@ -198,7 +197,7 @@ from stgsf_subscriptions
 where plan = 'Premium'
 ```
 
-When there are multiple conditions, indent each one an additional level beyond the WHERE clause. Use 'where 1 = 1' to make testing conditions easier. Place logical operators (e.g., AND, OR) at the beginning of each condition.
+When there are multiple conditions, indent each one an additional level beyond the `where` clause. Use `where 1 = 1` to make testing conditions easier. Place logical operators (e.g., `and`, `or`) at the beginning of each condition.
 
 ```sql
 select *
@@ -249,23 +248,23 @@ Place the primary key first, followed by foreign keys, then timestamps (e.g., `c
 ```sql
 -- Bad
 select
-  subscription_id,
-  id,
-  subscription_created_at,
-  subscription_start_date,
-  is_active,
-  is_cancelled
-from mart_users
-where mart_subscriptions
-
--- Good
-select
   subscription_created_at,
   subscription_start_date,
   is_active,
   is_cancelled,
   id,
   subscription_id
+from mart_users
+where mart_subscriptions
+
+-- Good
+select
+  subscription_id,
+  id,
+  subscription_created_at,
+  subscription_start_date,
+  is_active,
+  is_cancelled
 from mart_users
 where mart_subscriptions
 ```
@@ -291,7 +290,7 @@ from stgsf_subscriptions
 ### Column name conventions
 
 * Boolean fields should be prefixed with `was_`, `is_`, `has_`, or `does_`. For example: `is_customer`, `has_unsubscribed`.
-* Aggregation fields should be prefixed with `count_`, `sum_`, or `max_`. For example: `count_subscribers`, `max_liftime_age`.
+* Aggregation fields should be prefixed with `count_`, `sum_`, or `max_`. For example: `count_subscribers`, `max_lifetime_age`.
 * Date-only fields should be suffixed with `_date`. For example: `cancellation_date`.
 * Date-part fields should be suffixed with `_{date_part}`. For example, `cancellation_month`.
 * Date+time fields should be suffixed with `_at`. For example, `created_at`, `cancellation_at`.
@@ -423,15 +422,15 @@ select *
 from mart_users
 where is_active
 
--- Bad
-select *
-from mart_users
-where not is_active
-
 -- Good
 select *
 from mart_users
 where is_active = true
+
+-- Bad
+select *
+from mart_users
+where not is_active
 
 -- Good
 select *
@@ -543,7 +542,6 @@ with transaction_details as (
     user_id,
     row_number() over (partition by user_id order by created_date desc) as transaction_rank
   from int_transactions
-  from int_transactions
 ),
 
 final as (
@@ -605,7 +603,7 @@ qualify row_number() over (partition by customer order by created_date desc) = 1
   - `full outer join` is often more expensive and can be avoided if possible. In many cases alternative join types or restructuring the query can achieve the desired result with better performance.
 
 - Avoid using `order by` in data models unless necessary
-	- The `order by` clause can significantyl affect query performance, so it should only be used if the ordering of the results is essential for generating correct results.
+	- The `order by` clause can significantly affect query performance, so it should only be used if the ordering of the results is essential for generating correct results.
   - Consumers of the query should be able to handle any sorting requirements themselves, so sorting should not be a part of the data modeling process unless explicitly required for accuracy.
  
 ## *JOIN Statement Conventions*
@@ -660,7 +658,8 @@ left join mart_users as b
 ```
 
 ## *Commenting*
-- For newer or more complicated sql statements, it's reccomended to use comments to explain any complex or less commonly used sql logic. This provides helpful context for yourself in the future or for other team members to better understand the query.
-- When commenting multiple lines within a sql model, always use the `/* */` syntax
+- For newer or more complicated SQL statements, it's reccomended to use comments to explain any complex or less commonly used SQL logic. This provides helpful context for yourself in the future or for other team members to better understand the query.
+- Commenting out complex business logic is also encouraged.
+- When commenting multiple lines within a SQL model, always use the `/* */` syntax
 - Respect the character line limit when making comments
 	- If a comment is too long to fit comfortable on one line, break it up and continue on the next line to maintain readability and avoid horizontal scrolling
