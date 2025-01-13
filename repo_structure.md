@@ -13,7 +13,7 @@
 - ****Materialization****: `view`
     - Faster development cycles (no rebuilding of tables), ensures freshness of raw data, easy debugging
   
-**1. Intermediate Layer `intermediate`**
+**2. Intermediate Layer `intermediate`**
 - ****Purpose****: The intermediate layer serves as a transformation point where you apply more complex logic and business rules. You may join different staging tables, calculate derived columns, or clean up data further. These tables or views often serve as the foundation for more refined transformations.
 - ****Tables/Views****: These models typically combine data from different staging tables, create intermediate aggregations, and serve as stepping stones for more complex transformations.
 - ****Examples****:
@@ -27,7 +27,7 @@
     - For smaller or less frequently updated data, use `view`
     - For larger, frequently queried data, use `table` (especially if the transformation process is intensive).
   
-**1. Mart Layer `mart`**
+**3. Mart Layer `mart`**
 - ****Purpose****: The mart layer is where you create business-relevant aggregates, metrics, and KPIs. This layer prepares data specifically for business analysis and reporting. Instead of traditional fact and dimension tables, focus on creating aggregate data that answers specific business questions or provides insight into key performance indicators (KPIs)
 - ****Tables/Views****: These models are generally business-relevant aggregates.
 - ****Examples****:
@@ -41,7 +41,7 @@
     - For smaller regularly queried models, use `view`
     - For large models with periodic updates, use `incremental` for better performance during refreshes.
 
-**1. Dashboard Layer `dashboard`**
+**4. Dashboard Layer `dashboard`**
 - ****Purpose****: The dashboard layer is the final layer used for BI and reporting. It takes the data from previous layers and optimizes it for consumption by BI tools (e.g., Tableau). This layer will include pre-aggregated metrics, KPIs, and any additional formatting needed for dashboards or visualizations
 - ****Tables/Views****: Tables or views that contain the final data required for reporting tools. These are optimized for BI tools and often include high-level aggregations, time-based calculations (e.g., year-over-year comparisons), and business summaries.
 - ****Examples****:
